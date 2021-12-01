@@ -1,0 +1,6 @@
+[package]
+name = "adventofcode"
+
+[[bin]]
+name = "adventofcode"
+path = "main.rs"
