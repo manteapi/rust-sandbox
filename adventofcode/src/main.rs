@@ -3,16 +3,17 @@ use std::io::{self, BufRead};
 use std::path::Path;
 
 fn main() {
-    day1();
-    day2();
+    day1_part_1();
+    day1_part_2();
+    day2_part1();
 }
 
-fn day1() {
+fn day1_part_1() {
     let result = parse_day1_input("day/1/input.txt");
     match result {
         Ok(input) => {
             println!(
-                "{:?}",
+                "Day 1 - Part 1 : {:?}",
                 compute_orientation(input)
                     .iter()
                     .filter(|&&orientation| return orientation == true)
@@ -24,7 +25,36 @@ fn day1() {
     }
 }
 
-fn day2() {
+fn compute_3_size_window(input: Vec<i32>) -> Vec<i32> {
+    let mut output: Vec<i32> = Vec::new();
+    for (index, _) in input.iter().enumerate() {
+        if index >= 2 {
+            let window_value: i32 = input[index - 2] + input[index - 1] + input[index];
+            output.push(window_value);
+        }
+    }
+    return output;
+}
+
+fn day1_part_2() {
+    let result = parse_day1_input("day/1/input.txt");
+    match result {
+        Ok(input) => {
+            let windows: Vec<i32> = compute_3_size_window(input);
+            println!(
+                "Day 1 - Part 2 : {:?}",
+                compute_orientation(windows)
+                    .iter()
+                    .filter(|&&orientation| return orientation == true)
+                    .collect::<Vec<&bool>>()
+                    .len()
+            );
+        }
+        Err(error) => println!("{:?}", error),
+    }
+}
+
+fn day2_part1() {
     let result = parse_day2_input("day/2/input.txt");
     match result {
         Ok(input) => {
@@ -55,7 +85,10 @@ fn day2() {
             println!("Up: {:?}", up_number);
             println!("Depth: {:?}", up_number - down_number);
             println!("Forward: {:?}", forward_number);
-            println!("Result: {:?}", forward_number * (-up_number + down_number))
+            println!(
+                "Day 2 - Part 1: {:?}",
+                forward_number * (-up_number + down_number)
+            )
         }
         Err(error) => {
             println!("{:?}", error);
