@@ -7,6 +7,7 @@ fn main() {
     day1_part2();
     day2_part1();
     day2_part2();
+    day3_part1();
 }
 
 fn day1_part1() {
@@ -82,14 +83,8 @@ fn day2_part1() {
                 }
             }
 
-            println!("Down: {:?}", down_number);
-            println!("Up: {:?}", up_number);
-            println!("Depth: {:?}", up_number - down_number);
-            println!("Forward: {:?}", forward_number);
-            println!(
-                "Day 2 - Part 1: {:?}",
-                forward_number * (-up_number + down_number)
-            )
+            let depth_number = down_number - up_number;
+            println!("Day 2 - Part 1: {:?}", forward_number * (depth_number))
         }
         Err(error) => {
             println!("{:?}", error);
@@ -133,6 +128,58 @@ fn day2_part2() {
     }
 }
 
+fn find_most_common_bit(input: &Vec<String>) -> String {
+    let number_of_one: usize = input.iter().filter(|value| value.as_str() == "1").count();
+    let number_of_zero: usize = input.iter().filter(|value| value.as_str() == "0").count();
+    if number_of_zero > number_of_one {
+        return "0".to_string();
+    } else {
+        return "1".to_string();
+    }
+}
+
+fn find_less_common_bit(input: &Vec<String>) -> String {
+    let number_of_one: usize = input.iter().filter(|value| value.as_str() == "1").count();
+    let number_of_zero: usize = input.iter().filter(|value| value.as_str() == "0").count();
+    if number_of_zero < number_of_one {
+        return "0".to_string();
+    } else {
+        return "1".to_string();
+    }
+}
+
+fn parse_bit(input: &Vec<String>, index: usize) -> Vec<String> {
+    let mut output: Vec<String> = Vec::new();
+    for line in input {
+        output.push(line.chars().nth(index).unwrap().to_string());
+    }
+    return output;
+}
+
+fn day3_part1() {
+    let result = parse_day3_input("day/3/input.txt");
+    match result {
+        Ok(input) => {
+            let mut gamma_rate_as_string: String = String::new();
+            let mut epsilon_rate_as_string: String = String::new();
+            for i in 0..12 {
+                epsilon_rate_as_string
+                    .push_str(find_less_common_bit(&parse_bit(&input, i)).as_str());
+                gamma_rate_as_string.push_str(find_most_common_bit(&parse_bit(&input, i)).as_str());
+            }
+            let gamma_rate: isize =
+                isize::from_str_radix(gamma_rate_as_string.as_str(), 2).unwrap();
+            let epsilon_rate: isize =
+                isize::from_str_radix(epsilon_rate_as_string.as_str(), 2).unwrap();
+            let power_consumption: isize = gamma_rate * epsilon_rate;
+            println!("Day 3 - Part 1: {:?}", power_consumption);
+        }
+        Err(error) => {
+            println!("{:?}", error);
+        }
+    }
+}
+
 fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
 where
     P: AsRef<Path>,
@@ -152,6 +199,17 @@ fn compute_orientation(input: Vec<i32>) -> Vec<bool> {
         }
     }
     return output;
+}
+
+fn parse_day3_input<P>(filename: P) -> io::Result<Vec<String>>
+where
+    P: AsRef<Path>,
+{
+    if let Ok(lines) = read_lines(filename) {
+        return lines.collect();
+    } else {
+        return Ok(Vec::new());
+    }
 }
 
 fn parse_day2_input<P>(filename: P) -> io::Result<Vec<Vec<String>>>
