@@ -3,7 +3,12 @@ use std::io::{self, BufRead};
 use std::path::Path;
 
 fn main() {
-    let result = parse_input("../day/1/input");
+    day1();
+    day2();
+}
+
+fn day1() {
+    let result = parse_day1_input("day/1/input.txt");
     match result {
         Ok(input) => {
             println!(
@@ -16,6 +21,45 @@ fn main() {
             );
         }
         Err(error) => println!("{:?}", error),
+    }
+}
+
+fn day2() {
+    let result = parse_day2_input("day/2/input.txt");
+    match result {
+        Ok(input) => {
+            let mut forward_number: i32 = 0;
+            let mut down_number: i32 = 0;
+            let mut up_number: i32 = 0;
+
+            for data in input {
+                match data[1].parse::<i32>() {
+                    Ok(number_of_steps) => {
+                        if data[0] == "down" {
+                            down_number += number_of_steps;
+                        } else if data[0] == "up" {
+                            up_number += number_of_steps;
+                        } else if data[0] == "forward" {
+                            forward_number += number_of_steps;
+                        } else {
+                            println!("Some error occured");
+                        }
+                    }
+                    Err(error) => {
+                        println!("{:?}", error);
+                    }
+                }
+            }
+
+            println!("Down: {:?}", down_number);
+            println!("Up: {:?}", up_number);
+            println!("Depth: {:?}", up_number - down_number);
+            println!("Forward: {:?}", forward_number);
+            println!("Result: {:?}", forward_number * (-up_number + down_number))
+        }
+        Err(error) => {
+            println!("{:?}", error);
+        }
     }
 }
 
@@ -40,7 +84,29 @@ fn compute_orientation(input: Vec<i32>) -> Vec<bool> {
     return output;
 }
 
-fn parse_input<P>(filename: P) -> io::Result<Vec<i32>>
+fn parse_day2_input<P>(filename: P) -> io::Result<Vec<Vec<String>>>
+where
+    P: AsRef<Path>,
+{
+    if let Ok(lines) = read_lines(filename) {
+        let lines_as_strings: io::Result<Vec<String>> = lines.collect();
+        match lines_as_strings {
+            Ok(result) => {
+                return Ok(result
+                    .iter()
+                    .map(|line| line.split(" ").map(|value| value.to_string()).collect())
+                    .collect());
+            }
+            Err(e) => {
+                return Err(e);
+            }
+        }
+    } else {
+        return Ok(Vec::new());
+    }
+}
+
+fn parse_day1_input<P>(filename: P) -> io::Result<Vec<i32>>
 where
     P: AsRef<Path>,
 {
