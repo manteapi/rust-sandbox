@@ -3,12 +3,13 @@ use std::io::{self, BufRead};
 use std::path::Path;
 
 fn main() {
-    day1_part_1();
-    day1_part_2();
+    day1_part1();
+    day1_part2();
     day2_part1();
+    day2_part2();
 }
 
-fn day1_part_1() {
+fn day1_part1() {
     let result = parse_day1_input("day/1/input.txt");
     match result {
         Ok(input) => {
@@ -36,7 +37,7 @@ fn compute_3_size_window(input: Vec<i32>) -> Vec<i32> {
     return output;
 }
 
-fn day1_part_2() {
+fn day1_part2() {
     let result = parse_day1_input("day/1/input.txt");
     match result {
         Ok(input) => {
@@ -89,6 +90,42 @@ fn day2_part1() {
                 "Day 2 - Part 1: {:?}",
                 forward_number * (-up_number + down_number)
             )
+        }
+        Err(error) => {
+            println!("{:?}", error);
+        }
+    }
+}
+
+fn day2_part2() {
+    let result = parse_day2_input("day/2/input.txt");
+    match result {
+        Ok(input) => {
+            let mut aim: i32 = 0;
+            let mut horizontal: i32 = 0;
+            let mut depth: i32 = 0;
+
+            for data in input {
+                match data[1].parse::<i32>() {
+                    Ok(number_of_steps) => {
+                        if data[0] == "down" {
+                            aim += number_of_steps;
+                        } else if data[0] == "up" {
+                            aim -= number_of_steps;
+                        } else if data[0] == "forward" {
+                            horizontal += number_of_steps;
+                            depth += aim * number_of_steps;
+                        } else {
+                            println!("Some error occured");
+                        }
+                    }
+                    Err(error) => {
+                        println!("{:?}", error);
+                    }
+                }
+            }
+
+            println!("Day 2 - Part 2: {:?}", depth * horizontal);
         }
         Err(error) => {
             println!("{:?}", error);
