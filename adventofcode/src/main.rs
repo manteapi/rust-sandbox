@@ -8,6 +8,7 @@ fn main() {
     day2_part1();
     day2_part2();
     day3_part1();
+    day3_part2();
 }
 
 fn day1_part1() {
@@ -141,7 +142,7 @@ fn find_most_common_bit(input: &Vec<String>) -> String {
 fn find_less_common_bit(input: &Vec<String>) -> String {
     let number_of_one: usize = input.iter().filter(|value| value.as_str() == "1").count();
     let number_of_zero: usize = input.iter().filter(|value| value.as_str() == "0").count();
-    if number_of_zero < number_of_one {
+    if number_of_zero <= number_of_one {
         return "0".to_string();
     } else {
         return "1".to_string();
@@ -173,6 +174,55 @@ fn day3_part1() {
                 isize::from_str_radix(epsilon_rate_as_string.as_str(), 2).unwrap();
             let power_consumption: isize = gamma_rate * epsilon_rate;
             println!("Day 3 - Part 1: {:?}", power_consumption);
+        }
+        Err(error) => {
+            println!("{:?}", error);
+        }
+    }
+}
+
+fn filter_binary(input: &Vec<String>, index: usize, value: String) -> Vec<String> {
+    return input
+        .iter()
+        .filter(|number| number.chars().nth(index).unwrap().to_string() == value)
+        .cloned()
+        .collect();
+}
+
+fn drain_most_common_bit(input: &Vec<String>) -> String {
+    let mut index: usize = 0;
+    let mut filtered_input: Vec<String> = input.to_vec();
+    while filtered_input.len() > 1 {
+        let most_common_bit: String = find_most_common_bit(&parse_bit(&filtered_input, index));
+        filtered_input = filter_binary(&filtered_input, index, most_common_bit);
+        index = index + 1;
+    }
+    return filtered_input[0].to_string();
+}
+
+fn drain_least_common_bit(input: &Vec<String>) -> String {
+    let mut index: usize = 0;
+    let mut filtered_input: Vec<String> = input.to_vec();
+    while filtered_input.len() > 1 {
+        let least_common_bit: String = find_less_common_bit(&parse_bit(&filtered_input, index));
+        filtered_input = filter_binary(&filtered_input, index, least_common_bit);
+        index = index + 1;
+    }
+    return filtered_input[0].to_string();
+}
+
+fn day3_part2() {
+    let result = parse_day3_input("day/3/input.txt");
+    match result {
+        Ok(input) => {
+            let oxgen_generator_rating: isize =
+                isize::from_str_radix(&drain_most_common_bit(&input), 2).unwrap();
+            let co2_scrubbe_rating: isize =
+                isize::from_str_radix(&drain_least_common_bit(&input), 2).unwrap();
+            println!(
+                "Day 3 - Part 2: {:?}",
+                oxgen_generator_rating * co2_scrubbe_rating
+            );
         }
         Err(error) => {
             println!("{:?}", error);
