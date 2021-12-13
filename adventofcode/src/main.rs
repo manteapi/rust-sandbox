@@ -259,26 +259,65 @@ fn mark(bingo_grids: &Vec<Vec<Vec<usize>>>, mark_grids: &mut Vec<Vec<Vec<bool>>>
     }
 }
 
-fn check_winner(bingo_draw: &Vec<usize>, mark_grids: &Vec<Vec<Vec<bool>>>) -> Option<usize> {
-    return Some(0);
+fn check_grid(grid: &Vec<Vec<bool>>) -> bool {
+    let grid_size: usize = 5;
+    let mut match_per_column: Vec<usize> = vec![0; grid_size];
+    let mut match_per_row: Vec<usize> = vec![0; grid_size];
+    for (col_index, column) in grid.iter().enumerate() {
+        for (row_index, _) in column.iter().enumerate() {
+            if grid[col_index][row_index] == true {
+                match_per_row[row_index] = match_per_row[row_index] + 1;
+                match_per_column[col_index] = match_per_column[col_index] + 1;
+            }
+            if match_per_column[col_index] == grid_size {
+                return true;
+            }
+            if match_per_row[row_index] == grid_size {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+fn check_winner(mark_grids: &Vec<Vec<Vec<bool>>>) -> Option<usize> {
+    for (grid_index, grid) in mark_grids.iter().enumerate() {
+        if check_grid(grid) {
+            return Some(grid_index);
+        }
+    }
+    return None;
+}
+
+fn compute_unmarked_score(bingo_grid: &Vec<Vec<usize>>, mark_grid: &Vec<Vec<bool>>) -> usize {
+    let mut sum_of_unmarked_number: usize = 0;
+    for (col_index, column) in mark_grid.iter().enumerate() {
+        for (row_index, row) in column.iter().enumerate() {
+            if *row == false {
+                sum_of_unmarked_number = sum_of_unmarked_number + bingo_grid[col_index][row_index];
+            }
+        }
+    }
+    return sum_of_unmarked_number;
 }
 
 fn day4_part1() {
-    println!("hello");
-    let (mut bingo_draw, bingo_grids) = parse_day4_input("day/4/trial.txt");
+    let (mut bingo_draw, bingo_grids) = parse_day4_input("day/4/input.txt");
     let mut mark_grids = build_mark_grids(&bingo_grids);
     while !bingo_draw.is_empty() {
-        let draw_option = bingo_draw.pop();
-        match draw_option {
-            Some(draw) => {
-                mark(&bingo_grids, &mut mark_grids, draw);
+        let draw = bingo_draw.remove(0);
+        mark(&bingo_grids, &mut mark_grids, draw);
+        let winner_option: Option<usize> = check_winner(&mark_grids);
+        match winner_option {
+            Some(winner) => {
+                let score =
+                    draw * compute_unmarked_score(&bingo_grids[winner], &mark_grids[winner]);
+                println!("Day 4 - Part 1: {:?}, {:?}", winner, score);
+                break;
             }
             None => {}
         }
     }
-    println!("Draw : {:?}", bingo_draw);
-    println!("Grid number : {:?}", bingo_grids.len());
-    println!("Grids: {:?}", bingo_grids);
 }
 
 fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
