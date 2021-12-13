@@ -231,16 +231,50 @@ fn day3_part2() {
     }
 }
 
-fn build_mark_grids(bingo_grids: Vec<Vec<Vec<usize>>>) -> Vec<Vec<Vec<usize>>> {
-    let mut mark_grids: Vec<Vec<Vec<usize>>> = Vec::new();
+fn build_mark_grids(bingo_grids: &Vec<Vec<Vec<usize>>>) -> Vec<Vec<Vec<bool>>> {
+    let mut mark_grids: Vec<Vec<Vec<bool>>> = Vec::new();
+    for grid in bingo_grids {
+        let mut marks: Vec<Vec<bool>> = Vec::new();
+        for column in grid {
+            let mut mark_row: Vec<bool> = Vec::new();
+            for _ in column {
+                mark_row.push(false);
+            }
+            marks.push(mark_row);
+        }
+        mark_grids.push(marks);
+    }
     return mark_grids;
+}
+
+fn mark(bingo_grids: &Vec<Vec<Vec<usize>>>, mark_grids: &mut Vec<Vec<Vec<bool>>>, draw: usize) {
+    for (grid_index, grid) in bingo_grids.iter().enumerate() {
+        for (col_index, column) in grid.iter().enumerate() {
+            for (row_index, row) in column.iter().enumerate() {
+                if *row == draw {
+                    mark_grids[grid_index][col_index][row_index] = true;
+                }
+            }
+        }
+    }
+}
+
+fn check_winner(bingo_draw: &Vec<usize>, mark_grids: &Vec<Vec<Vec<bool>>>) -> Option<usize> {
+    return Some(0);
 }
 
 fn day4_part1() {
     println!("hello");
     let (mut bingo_draw, bingo_grids) = parse_day4_input("day/4/trial.txt");
+    let mut mark_grids = build_mark_grids(&bingo_grids);
     while !bingo_draw.is_empty() {
-        println!("{:?}", bingo_draw.pop());
+        let draw_option = bingo_draw.pop();
+        match draw_option {
+            Some(draw) => {
+                mark(&bingo_grids, &mut mark_grids, draw);
+            }
+            None => {}
+        }
     }
     println!("Draw : {:?}", bingo_draw);
     println!("Grid number : {:?}", bingo_grids.len());
