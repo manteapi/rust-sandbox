@@ -9,6 +9,7 @@ fn main() {
     day2_part2();
     day3_part1();
     day3_part2();
+    day4_part1();
 }
 
 fn day1_part1() {
@@ -230,6 +231,17 @@ fn day3_part2() {
     }
 }
 
+fn day4_part1() {
+    println!("hello");
+    let (mut bingo_draw, bingo_grids) = parse_day4_input("day/4/trial.txt");
+    while !bingo_draw.is_empty() {
+        println!("{:?}", bingo_draw.pop());
+    }
+    println!("Draw : {:?}", bingo_draw);
+    println!("Grid number : {:?}", bingo_grids.len());
+    println!("Grids: {:?}", bingo_grids);
+}
+
 fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
 where
     P: AsRef<Path>,
@@ -249,6 +261,55 @@ fn compute_orientation(input: Vec<i32>) -> Vec<bool> {
         }
     }
     return output;
+}
+
+fn parse_day4_input<P>(filename: P) -> (Vec<usize>, Vec<Vec<Vec<usize>>>)
+where
+    P: AsRef<Path>,
+{
+    let grid_size: usize = 5;
+    let mut line_counter: usize = 0;
+    let mut current_grid: Vec<Vec<usize>> = Vec::new();
+    let mut bingo_draw: Vec<usize> = Vec::new();
+    let mut bingo_grids: Vec<Vec<Vec<usize>>> = Vec::new();
+    match read_lines(filename) {
+        Ok(input) => {
+            let input_as_strings: io::Result<Vec<String>> = input.collect();
+            match input_as_strings {
+                Ok(lines) => {
+                    for (index, line) in lines.iter().enumerate() {
+                        if index == 0 {
+                            bingo_draw = line
+                                .split(",")
+                                .map(|value| value.parse::<usize>().unwrap())
+                                .collect();
+                        } else if line.len() > 1 {
+                            let parsed_line: Vec<usize> = line
+                                .split_whitespace()
+                                .map(|value| value.parse::<usize>().unwrap())
+                                .collect();
+                            current_grid.push(parsed_line);
+                            line_counter = line_counter + 1;
+                            if line_counter == grid_size {
+                                line_counter = 0;
+                                bingo_grids.push(current_grid.clone());
+                                current_grid.clear();
+                            }
+                        }
+                    }
+                    return (bingo_draw, bingo_grids);
+                }
+                Err(error) => {
+                    println!("{:?}", error);
+                    return (bingo_draw, bingo_grids);
+                }
+            }
+        }
+        Err(error) => {
+            println!("{:?}", error);
+            return (bingo_draw, bingo_grids);
+        }
+    }
 }
 
 fn parse_day3_input<P>(filename: P) -> io::Result<Vec<String>>
