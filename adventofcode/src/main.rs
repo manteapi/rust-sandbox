@@ -231,6 +231,11 @@ fn day3_part2() {
     }
 }
 
+fn build_mark_grids(bingo_grids: Vec<Vec<Vec<usize>>>) -> Vec<Vec<Vec<usize>>> {
+    let mut mark_grids: Vec<Vec<Vec<usize>>> = Vec::new();
+    return mark_grids;
+}
+
 fn day4_part1() {
     println!("hello");
     let (mut bingo_draw, bingo_grids) = parse_day4_input("day/4/trial.txt");
